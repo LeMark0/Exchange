@@ -1,8 +1,8 @@
-# React-Redux-Starter-Kit
-Basic project structure for react-redux app development
+# Exchange app
+Exchange app based on my React-Redux-Starter-Kit
 
 # How to run
-1. `git clone https://github.com/CheerfulYeti/React-Redux-Starter-Kit.git`
+1. `git clone https://github.com/CheerfulYeti/Exchange.git`
 2. `npm i`
 3. `npm start`
 
