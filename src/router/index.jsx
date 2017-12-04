@@ -7,5 +7,6 @@ import componentList from './componentList';
 export default () => (
   <Switch>
     <Route exact strict={false} path={routeList.home} component={componentList.home} />
+    <Route exact strict={false} path={routeList.test} component={componentList.test} />
   </Switch>
 );

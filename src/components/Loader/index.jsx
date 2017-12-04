@@ -1,7 +1,7 @@
 import React from 'react';
 
+import { ImageContainer } from './styled';
+
 export default () => (
-  <div className="component-loader">
-    <div className="image-container" />
-  </div>
+  <ImageContainer />
 );
