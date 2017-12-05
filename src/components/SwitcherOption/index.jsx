@@ -10,6 +10,7 @@ export default class SwitcherOption extends Component {
     isSelected: PropTypes.bool,
     children: PropTypes.node,
     tabIndex: PropTypes.number,
+    className: PropTypes.string,
   };
 
   static defaultProps = {
@@ -17,6 +18,7 @@ export default class SwitcherOption extends Component {
     isSelected: false,
     children: null,
     tabIndex: 0,
+    className: null,
   };
 
   render() {
@@ -27,6 +29,7 @@ export default class SwitcherOption extends Component {
         aria-checked={this.props.isSelected}
         onClick={this.handleClick}
         onKeyPress={this.handleClick}
+        className={this.props.className}
       >
         {this.props.children}
       </SwitcherOptionStyled>

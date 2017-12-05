@@ -1,7 +1,7 @@
-import App from 'containers/App';
 import Test from 'containers/Test';
+import Exchange from 'containers/Exchange';
 
 export default {
-  home: App,
+  home: Exchange,
   test: Test,
 };
