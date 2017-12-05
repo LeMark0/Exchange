@@ -1,8 +1,10 @@
+import stubServerConfig from './stubServerConfig';
+
 const config = {
   useStubs: true,
   api: {
     stub: {
-      host: 'http://localhost:3000/',
+      host: `http://localhost:${stubServerConfig.port}/`,
       appId: 0,
     },
     localhost: {
@@ -11,7 +13,7 @@ const config = {
     },
     openexchangerates: {
       host: 'https://openexchangerates.org/api/',
-      appId: '',
+      appId: '6eef3f05cd1240038ac66da30384cb5c',
     },
   },
 };

@@ -34,6 +34,7 @@ export default class Switcher extends React.Component {
     onChange: PropTypes.func,
     children: PropTypes.arrayOf(PropTypes.node),
     orientation: PropTypes.oneOf(['horizontal', 'vertical']),
+    className: PropTypes.string,
   };
 
   static defaultProps = {
@@ -41,10 +42,11 @@ export default class Switcher extends React.Component {
     onChange: () => false,
     children: null,
     orientation: 'horizontal',
+    className: null,
   };
 
   render() {
-    const { children, orientation } = this.props;
+    const { children, orientation, className } = this.props;
     const { value } = this.state;
 
     const childrenList = children.map((child, key) =>
@@ -59,6 +61,7 @@ export default class Switcher extends React.Component {
       <SwitcherStyled
         role="radioGroup"
         orientation={orientation}
+        className={className}
       >
         {childrenList}
       </SwitcherStyled>

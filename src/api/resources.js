@@ -1,17 +1,25 @@
 import config from './config';
+import methodList from './methodList';
 
-export const method = {
-  post: 'post',
-  get: 'get',
-};
-
-const methodList = {
+const endpointList = {
   currency: {
     latest: {
-      useStub: true,
+      useStub: false,
       host: config.api.openexchangerates.host,
-      method: method.get,
+      method: methodList.get,
       url: 'latest', // required
+      transformRequest: (params) => ({
+        ...params,
+        app_id: config.api.openexchangerates.appId,
+      }),
+    },
+  },
+  user: {
+    balance: {
+      useStub: true,
+      host: config.api.localhost.host,
+      method: methodList.get,
+      url: 'user/balance', // required
       transformRequest: (/* params */) => ({}),
     },
   },
@@ -29,4 +37,4 @@ function generateAlias(list, pathList = []) {
   }, {});
 }
 
-export default generateAlias(methodList);
+export default generateAlias(endpointList);

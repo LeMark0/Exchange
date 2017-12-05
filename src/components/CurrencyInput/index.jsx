@@ -9,6 +9,7 @@ export default class CurrencyInput extends Component {
     thousandSeparator: PropTypes.string,
     decimalSeparator: PropTypes.string,
     decimalScale: PropTypes.number,
+    className: PropTypes.string,
   };
 
   static defaultProps = {
@@ -16,6 +17,7 @@ export default class CurrencyInput extends Component {
     thousandSeparator: ' ',
     decimalSeparator: '.',
     decimalScale: 2,
+    className: null,
   };
 
   render() {

@@ -3,6 +3,7 @@ import get from 'lodash/get';
 import flow from 'lodash/flow';
 import resourceList from './resources';
 import apiConfig from './config';
+import methodList from './methodList';
 
 function getResourceHost(resourceConfig) {
   if (resourceConfig.useStub) {
@@ -29,12 +30,20 @@ function prepareResource(resourceConfig = {}) {
 
 export default function (resource, params) {
   const resourceConfig = prepareResource(get(resourceList, resource));
-
-  return axios({
+  const clientConfig = {
     method: resourceConfig.method,
     baseURL: getResourceHost(resourceConfig),
     url: resourceConfig.url,
-    data: params,
     transformRequest: [resourceConfig.transformRequest],
-  });
+  };
+  if ([methodList.put, methodList.post, methodList.patch].includes(resourceConfig.method)) {
+    clientConfig.data = params;
+  }
+  if (resourceConfig.method === methodList.get) {
+    clientConfig.params = (resourceConfig.transformRequest)
+      ? resourceConfig.transformRequest(params)
+      : params;
+  }
+
+  return axios(clientConfig);
 }
