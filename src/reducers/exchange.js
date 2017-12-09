@@ -9,9 +9,9 @@ const initialState = immutable.from({
   currencyTo: currencyList.GBP.code,
   amountFrom: 0,
   amountTo: 0,
+  isReverse: false,
   async: {
     getLatestRates: new AsyncState(),
-    getUserBalance: new AsyncState(),
   },
 });
 
@@ -31,5 +31,32 @@ export default handleActions({
       getLatestRates: prepareStateFail(state.async.getLatestRates, action.payload),
     },
   }, { deep: true }),
+
+  [exchangeTypes.setCurrencyFrom]: (state, action) => immutable.set(
+    state,
+    'currencyFrom',
+    action.payload,
+  ),
+  [exchangeTypes.setCurrencyTo]: (state, action) => immutable.set(
+    state,
+    'currencyTo',
+    action.payload,
+  ),
+  [exchangeTypes.setAmountFrom]: (state, action) => immutable.set(
+    state,
+    'amountFrom',
+    action.payload,
+  ),
+  [exchangeTypes.setAmountTo]: (state, action) => immutable.set(
+    state,
+    'amountTo',
+    action.payload,
+  ),
+
+  [exchangeTypes.setIsReverse]: (state, action) => immutable.set(
+    state,
+    'isReverse',
+    action.payload,
+  ),
 
 }, initialState);

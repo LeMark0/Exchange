@@ -23,7 +23,7 @@ export default function Currency(props) {
 
 Currency.propTypes = {
   currencyCode: PropTypes.string,
-  value: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   format: PropTypes.string,
 };
 

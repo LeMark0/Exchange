@@ -1,15 +1,14 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Decimal from 'decimal.js';
-// import Numeral from 'numeral';
+import Numeral from 'numeral';
 import {
   setCurrencyFrom,
   setCurrencyTo,
   setAmountTo,
   setAmountFrom,
+  setIsReverse,
   getLatestRatesPeriodicalStart,
-  getLatestRatesPeriodicalStop,
 } from 'actions/exchange';
 import { getBalance as loadBalance } from 'actions/user';
 
@@ -33,21 +32,28 @@ import {
   ButtonStyled,
 } from './styled';
 
-/*
-* TODO convert input data to appropriate type
-*
-* */
+function getSymbolByCurrency(currency) {
+  return currencyList[currency].symbol;
+}
+
+function parseNumber(value) {
+  const numeralValue = Numeral(value).value();
+  if (numeralValue === null) {
+    return 0;
+  }
+  return numeralValue;
+}
 
 class Exchange extends Component {
   componentDidMount() {
     const { exchangeState: { currencyFrom } } = this.props;
 
-    this.props.getRatesPeriodStart({
+    this.props.loadRatesPeriodStart({
       base: currencyFrom,
       symbols: 'EUR,GBP,USD',
     });
 
-    this.props.getUserBalance();
+    this.props.loadUserBalance();
   }
 
   render() {
@@ -59,157 +65,142 @@ class Exchange extends Component {
         currencyFrom,
         currencyTo,
         amountFrom,
-        // amountTo,
+        amountTo,
+        isReverse,
       },
     } = this.props;
 
-    console.log('latestRatesAsyncState: ', latestRatesAsyncState);
-    console.log('balanceAsyncState: ', balanceAsyncState);
+    const symbolFrom = getSymbolByCurrency(currencyFrom);
+    const symbolTo = getSymbolByCurrency(currencyTo);
 
-    const symbolFrom = this.getSymbolByCurrency(currencyFrom);
-    const symbolTo = this.getSymbolByCurrency(currencyTo);
+    const isLoaded = latestRatesAsyncState.needShowData && balanceAsyncState.needShowData;
+    const valueNumber = parseNumber((isReverse) ? amountTo : amountFrom);
+    const convertedAmount = this.convert(valueNumber, currencyTo, currencyFrom, isReverse);
+    const topValue = (isReverse) ? convertedAmount : amountFrom;
+    const bottomValue = (isReverse) ? amountTo : convertedAmount;
 
-    return (latestRatesAsyncState.needShowData && balanceAsyncState.needShowData)
-      ?
-        <ExchangeContainer>
-          <TopContainer>
-            <div>
-              <Title>Exchange</Title>
-              <CurrencySwitcher
-                value={currencyFrom}
-                onChange={(value) => this.handleChangeCurrency('currencyFrom', value)}
+    return (
+      <ExchangeContainer>
+        <TopContainer>
+          <div>
+            <Title>Exchange</Title>
+            <CurrencySwitcher
+              value={currencyFrom}
+              onChange={this.handleChangeCurrencyFrom}
+            />
+            <CurrencyContainer>
+              <Symbol>{symbolFrom}</Symbol>
+              <CurrencyInputStyled
+                value={topValue}
+                onChange={this.handleChangeAmountFrom}
               />
-              <CurrencyContainer>
-                <Symbol>{symbolFrom}</Symbol>
-                <CurrencyInputStyled
-                  value={amountFrom}
-                  prefix={(amountFrom > 0) ? '- ' : ''}
-                  onChange={(value) => this.handleChangeAmountTo(value)}
-                />
-              </CurrencyContainer>
-              <Balance>
-                <span>You have:</span>
-                <Currency value={balance[currencyFrom]} currencyCode={currencyFrom} />
-              </Balance>
-            </div>
-          </TopContainer>
-          <BottomContainer>
-            <div>
-              <ArrowDown />
-              <CurrencyContainer>
-                <Symbol>{symbolTo}</Symbol>
-                <CurrencyInputStyled
-                  value={0}
-                  onChange={(value) => this.handleChangeAmountTo(value)}
-                />
-              </CurrencyContainer>
-              <Balance>
-                <span>You have:</span>
-                <Currency value={balance[currencyTo]} currencyCode={currencyFrom} />
-              </Balance>
-              <CurrencySwitcher
-                onChange={(value) => this.handleChangeCurrency('currencyTo', value)}
-                value={currencyTo}
+            </CurrencyContainer>
+            <Balance>
+              <span>You have:</span>
+              <Currency value={balance[currencyFrom]} currencyCode={currencyFrom} />
+            </Balance>
+          </div>
+        </TopContainer>
+        <BottomContainer>
+          <div>
+            <ArrowDown />
+            <CurrencyContainer>
+              <Symbol>{symbolTo}</Symbol>
+              <CurrencyInputStyled
+                value={bottomValue}
+                ispositive="true"
+                onChange={this.handleChangeAmountTo}
               />
-              <ButtonStyled
-                onClick={this.handleExchange}
-                isDisabled={currencyFrom === currencyTo}
-              >
-                Exchange
-              </ButtonStyled>
-            </div>
-          </BottomContainer>
-        </ExchangeContainer>
-      :
-        <Loader />;
+            </CurrencyContainer>
+            <Balance>
+              <span>You have:</span>
+              <Currency value={balance[currencyTo]} currencyCode={currencyFrom} />
+            </Balance>
+            <CurrencySwitcher
+              onChange={this.handleChangeCurrencyTo}
+              value={currencyTo}
+            />
+            <ButtonStyled
+              onClick={this.handleExchange}
+              isDisabled={currencyFrom === currencyTo || !isLoaded}
+            >
+              {this.renderButtonContent(isLoaded)}
+            </ButtonStyled>
+          </div>
+        </BottomContainer>
+      </ExchangeContainer>
+    );
   }
+
+  renderButtonContent = (isLoaded) => ((isLoaded)
+    ? <div>Exchange</div>
+    : <Loader />
+  );
 
   handleExchange = () => {
     console.log('handleExchange()');
-
-
   };
 
-  handleChange(alias, value) {
-    console.log('Exchange onChange: ', alias, value);
-    this.setState({
-      [alias]: value,
+  handleChangeCurrencyFrom = (value) => {
+    this.props.dispatchCurrencyFrom(value);
+    // need to update rates
+    this.props.loadRatesPeriodStart({
+      base: value,
+      symbols: 'EUR,GBP,USD',
     });
-  }
+  };
 
-  handleChangeCurrency(alias, value) {
-    if (alias === 'currencyFrom') {
-      this.props.setCurrencyFrom(value);
-      // need to update rates
-      this.getRatesPeriodStart({
-        base: value,
-        symbols: 'EUR,GBP,USD',
-      });
-    }
+  handleChangeCurrencyTo = (value) => {
+    this.props.dispatchCurrencyTo(value);
+  };
 
-    if (alias === 'currencyTo') {
-      this.props.setCurrencyTo(value);
-    }
-  }
+  handleChangeAmountFrom = (value = '') => {
+    const valueNumber = parseNumber(value);
+    this.props.dispatchIsReverse(false);
+    this.props.dispatchAmountFrom(valueNumber);
+  };
 
-  handleChangeAmountFrom(value) {
-    // TODO make a number!
-    value = value.toString().replace(/\s|\-/g, '');
+  handleChangeAmountTo = (value = '') => {
+    const valueNumber = parseNumber(value);
+    this.props.dispatchIsReverse(true);
+    this.props.dispatchAmountTo(valueNumber);
+  };
 
-    this.props.setAmountFrom(value);
-  }
-
-  handleChangeAmountTo(value) {
-    // TODO make a Decimal and dispatch string!
-    console.log('handleChangeAmountTo: ', value);
-    const { exchangeState: { currencyFrom, currencyTo } } = this.props;
-
-    const convertedAmount = this.convert(value, currencyTo, currencyFrom, true);
-
-    this.props.setAmountTo(value);
-    this.props.setAmountFrom(convertedAmount.toString());
-  }
-
-  getSymbolByCurrency(currency) {
-
-    return currencyList[currency].symbol;
-  }
-
-  convert(amount = 0, currencyFrom, currencyTo, isRevese = false) {
-    amount = amount.toString().replace(/\s/g, '');
+  convert = (amount = 0, currencyFrom, currencyTo, isReverse = false) => {
+    const { rateList } = this.props;
+    const valueNumeral = Numeral(amount);
+    const rateNumeral = Numeral(rateList[currencyFrom]);
 
     if (currencyFrom === currencyTo) {
-
-      return amount;
+      // no need to convert
+      return valueNumeral.value();
     }
 
-    const { rateList } = this.props;
-
-    if (isRevese === true) {
-      let rate = rateList[currencyFrom];
-      return Decimal(amount).div(Decimal(rate));
+    if (isReverse === true) {
+      return valueNumeral
+        .divide(rateNumeral.value())
+        .value();
     }
 
-    let rate = rateList[currencyTo];
-    console.log('convert amount, rate: ', amount, rate);
-
-    return Decimal(amount).mul(Decimal(rate));
+    return valueNumeral
+      .multiply(rateNumeral.value())
+      .value();
   }
 }
 
 Exchange.propTypes = {
-  exchangeState: PropTypes.object.isRequired,
   latestRatesAsyncState: PropTypes.object.isRequired,
   balanceAsyncState: PropTypes.object.isRequired,
+  exchangeState: PropTypes.object.isRequired,
   rateList: PropTypes.object.isRequired,
   balance: PropTypes.object.isRequired,
-  getRatesPeriodStart: PropTypes.func.isRequired,
-  // getRatesPeriodStop: PropTypes.func.isRequired,
-  setAmountTo: PropTypes.func.isRequired,
-  setAmountFrom: PropTypes.func.isRequired,
-  setCurrencyTo: PropTypes.func.isRequired,
-  setCurrencyFrom: PropTypes.func.isRequired,
-  getUserBalance: PropTypes.func.isRequired,
+  loadRatesPeriodStart: PropTypes.func.isRequired,
+  loadUserBalance: PropTypes.func.isRequired,
+  dispatchAmountTo: PropTypes.func.isRequired,
+  dispatchAmountFrom: PropTypes.func.isRequired,
+  dispatchCurrencyTo: PropTypes.func.isRequired,
+  dispatchCurrencyFrom: PropTypes.func.isRequired,
+  dispatchIsReverse: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = function (state) {
@@ -243,26 +234,26 @@ const mapStateToProps = function (state) {
 
 const mapDispatchToProps = function (dispatch) {
   return {
-    getUserBalance: () => {
+    loadUserBalance: () => {
       dispatch(loadBalance());
     },
-    getRatesPeriodStart: (params) => {
+    loadRatesPeriodStart: (params) => {
       dispatch(getLatestRatesPeriodicalStart(params, requestPeriod));
     },
-    getRatesPeriodStop: () => {
-      dispatch(getLatestRatesPeriodicalStop());
-    },
-    setAmountTo: (value) => {
+    dispatchAmountTo: (value) => {
       dispatch(setAmountTo(value));
     },
-    setAmountFrom: (value) => {
+    dispatchAmountFrom: (value) => {
       dispatch(setAmountFrom(value));
     },
-    setCurrencyTo: (value) => {
+    dispatchCurrencyTo: (value) => {
       dispatch(setCurrencyTo(value));
     },
-    setCurrencyFrom: (value) => {
+    dispatchCurrencyFrom: (value) => {
       dispatch(setCurrencyFrom(value));
+    },
+    dispatchIsReverse: (value) => {
+      dispatch(setIsReverse(value));
     },
   };
 };

@@ -10,6 +10,11 @@ export const exchangeTypes = {
   },
   getLatestRatesTimerStart: 'EXCHANGE/GET_LATEST_RATES_TIMER_START',
   getLatestRatesTimerStop: 'EXCHANGE/GET_LATEST_RATES_TIMER_STOP',
+  setCurrencyFrom: 'EXCHANGE/SET_CURRENCY_FROM',
+  setCurrencyTo: 'EXCHANGE/SET_CURRENCY_TO',
+  setAmountFrom: 'EXCHANGE/SET_AMOUNT_FROM',
+  setAmountTo: 'EXCHANGE/SET_AMOUNT_TO',
+  setIsReverse: 'EXCHANGE/SET_IS_REVERSE',
 };
 
 export const userTypes = {

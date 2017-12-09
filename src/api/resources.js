@@ -5,12 +5,12 @@ const endpointList = {
   currency: {
     latest: {
       useStub: false,
-      host: config.api.openexchangerates.host,
+      host: config.api.fixer.host,
       method: methodList.get,
       url: 'latest', // required
       transformRequest: (params) => ({
         ...params,
-        app_id: config.api.openexchangerates.appId,
+        // app_id: config.api.openexchangerates.appId,
       }),
     },
   },

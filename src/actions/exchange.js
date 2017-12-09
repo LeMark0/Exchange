@@ -9,6 +9,12 @@ export const getLatestRatesFail = createAction(exchangeTypes.async.getLatestRate
 export const getLatestRatesTimerStart = createAction(exchangeTypes.getLatestRatesTimerStart);
 export const getLatestRatesTimerStop = createAction(exchangeTypes.getLatestRatesTimerStop);
 
+export const setCurrencyFrom = createAction(exchangeTypes.setCurrencyFrom);
+export const setCurrencyTo = createAction(exchangeTypes.setCurrencyTo);
+export const setAmountTo = createAction(exchangeTypes.setAmountTo);
+export const setAmountFrom = createAction(exchangeTypes.setAmountFrom);
+export const setIsReverse = createAction(exchangeTypes.setIsReverse);
+
 export const getLatestRates = (params) => async (dispatch) => {
   dispatch(getLatestRatesRequest());
 

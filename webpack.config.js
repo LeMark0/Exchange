@@ -50,6 +50,7 @@ module.exports = {
     alias: {
       components: path.resolve(__dirname, `${pathList.src}/components/`),
       containers: path.resolve(__dirname, `${pathList.src}/containers/`),
+      actions: path.resolve(__dirname, `${pathList.src}/actions/`),
     },
   },
   devtool: 'cheap-module-source-map',

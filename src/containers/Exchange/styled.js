@@ -45,6 +45,7 @@ export const Symbol = styled.div`
 
 export const CurrencyInputStyled = styled(CurrencyInput)`
   border-bottom: none;
+  color: ${(props) => (props.ispositive ? '#41e887' : '#ffffff')}
 `;
 
 export const CurrencyContainer = styled.div`

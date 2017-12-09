@@ -1,7 +1,6 @@
 import stubServerConfig from './stubServerConfig';
 
 const config = {
-  useStubs: true,
   api: {
     stub: {
       host: `http://localhost:${stubServerConfig.port}/`,
@@ -10,6 +9,9 @@ const config = {
     localhost: {
       host: 'http://localhost:3000/',
       appId: 0,
+    },
+    fixer: {
+      host: 'http://api.fixer.io/',
     },
     openexchangerates: {
       host: 'https://openexchangerates.org/api/',

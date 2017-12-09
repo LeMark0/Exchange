@@ -24,7 +24,10 @@ const createStubURI = (uri = '') => `${(
 function prepareResource(resourceConfig = {}) {
   return flow(
     (config) => ({ ...config, host: getResourceHost(config) }),
-    (config) => ({ ...config, url: createStubURI(config.url) }),
+    (config) => ({
+      ...config,
+      url: (resourceConfig.useStub) ? createStubURI(config.url) : config.url,
+    }),
   )(resourceConfig);
 }
 
