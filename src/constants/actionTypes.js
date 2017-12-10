@@ -18,9 +18,10 @@ export const exchangeTypes = {
 };
 
 export const userTypes = {
+  setBalance: 'USER/SET_BALANCE',
   async: {
-    getBalanceRequest: 'EXCHANGE/ASYNC/GET_BALANCE_REQUEST',
-    getBalanceSuccess: 'EXCHANGE/ASYNC/GET_BALANCE_SUCCESS',
-    getBalanceFail: 'EXCHANGE/ASYNC/GET_BALANCE_FAIL',
+    getBalanceRequest: 'USER/ASYNC/GET_BALANCE_REQUEST',
+    getBalanceSuccess: 'USER/ASYNC/GET_BALANCE_SUCCESS',
+    getBalanceFail: 'USER/ASYNC/GET_BALANCE_FAIL',
   },
 };

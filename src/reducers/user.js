@@ -31,5 +31,10 @@ export default handleActions({
       getBalance: prepareStateFail(state.async.getBalance, action.payload),
     },
   }, { deep: true }),
+  [userTypes.setBalance]: (state, action) => immutable.setIn(
+    state,
+    ['balance', action.payload.currency],
+    action.payload.amount,
+  ),
 
 }, initialState);

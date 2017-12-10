@@ -11,6 +11,7 @@ export const Container = styled.div`
 export const TopContainer = Container.extend`
   align-items: flex-end;
   height: 30%;
+  min-height: 150px;
 `;
 
 export const BottomContainer = Container.extend`
@@ -45,7 +46,7 @@ export const Symbol = styled.div`
 
 export const CurrencyInputStyled = styled(CurrencyInput)`
   border-bottom: none;
-  color: ${(props) => (props.ispositive ? '#41e887' : '#ffffff')}
+  color: ${(props) => (props.ispositive ? '#41e887' : '#ffffff')};
 `;
 
 export const CurrencyContainer = styled.div`
@@ -63,9 +64,9 @@ export const Balance = styled.div`
   text-align: left;
   width: 100%;
   font-size: 12px;
-  color: #fff;
-  
-  :first-child {
+  color: ${(props) => (props.error ? '#ff8888' : '#ffffff')};
+
+  span {
     margin-right: 5px;
   }
 `;

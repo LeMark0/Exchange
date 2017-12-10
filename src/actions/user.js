@@ -6,6 +6,11 @@ export const getBalanceRequest = createAction(userTypes.async.getBalanceRequest)
 export const getBalanceSuccess = createAction(userTypes.async.getBalanceSuccess);
 export const getBalanceFail = createAction(userTypes.async.getBalanceFail);
 
+export const setBalance = createAction(
+  userTypes.setBalance,
+  (currency, amount) => ({ currency, amount }),
+);
+
 export const getBalance = (params) => async (dispatch) => {
   dispatch(getBalanceRequest());
 

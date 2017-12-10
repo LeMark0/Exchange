@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import Numeral from 'numeral';
 
 import {
   setCurrencyFrom,
@@ -11,8 +12,9 @@ import {
   getLatestRatesPeriodicalStart,
 } from 'actions/exchange';
 
-import { getBalance as loadBalance } from 'actions/user';
+import { getBalance as loadBalance, setBalance } from 'actions/user';
 import { requestPeriod } from 'config/exchange';
+// import { LOAD_LATEST_RATES_ERROR, LO } from 'constants/error';
 
 import Loader from 'components/Loader';
 import Currency from 'components/Currency';
@@ -63,8 +65,10 @@ class Exchange extends Component {
     const symbolTo = getSymbolByCurrency(currencyTo);
 
     const isLoaded = latestRatesAsyncState.needShowData && balanceAsyncState.needShowData;
+    const isLoading = latestRatesAsyncState.needShowLoader || balanceAsyncState.needShowLoader;
     const valueNumber = parseNumber((isReverse) ? amountTo : amountFrom);
 
+    // is not saved in store!
     const convertedAmount = convertCurrency(
       valueNumber,
       currencyTo,
@@ -74,6 +78,12 @@ class Exchange extends Component {
     );
     const topValue = (isReverse) ? convertedAmount : amountFrom;
     const bottomValue = (isReverse) ? amountTo : convertedAmount;
+    const isEnoughMoney = topValue <= balance[currencyFrom];
+
+    const isValid = isLoaded
+      && convertedAmount
+      && isEnoughMoney
+      && currencyFrom !== currencyTo;
 
     return (
       <ExchangeContainer>
@@ -91,9 +101,12 @@ class Exchange extends Component {
                 onChange={this.handleChangeAmountFrom}
               />
             </CurrencyContainer>
-            <Balance>
+            <Balance error={!isEnoughMoney}>
               <span>You have:</span>
-              <Currency value={balance[currencyFrom]} currencyCode={currencyFrom} />
+              <Currency
+                value={balance[currencyFrom]}
+                currencyCode={currencyFrom}
+              />
             </Balance>
           </div>
         </TopContainer>
@@ -118,10 +131,11 @@ class Exchange extends Component {
             />
             <ButtonStyled
               onClick={this.handleExchange}
-              isDisabled={currencyFrom === currencyTo || !isLoaded}
+              isDisabled={!isValid}
             >
-              {this.renderButtonContent(isLoaded)}
+              {this.renderButtonContent(!isLoading)}
             </ButtonStyled>
+            {this.renderError()}
           </div>
         </BottomContainer>
       </ExchangeContainer>
@@ -133,8 +147,50 @@ class Exchange extends Component {
     : <Loader />
   );
 
+  renderError = () => {
+    const { latestRatesAsyncState, balanceAsyncState } = this.props;
+    const asyncList = [latestRatesAsyncState, balanceAsyncState];
+    // const errorList = asyncList.reduce((acc, curr) => {
+    //   if (curr.needShowError) {
+    //     acc = [ ...acc,  ];
+    //   }
+    //
+    //   return acc;
+    // }, {});
+    const errorList = {
+      latestRatesAsyncState: '',
+    };
+    return (
+      <div></div>
+    );
+  };
+
   handleExchange = () => {
+    // TODO get convertedAmount
     console.log('handleExchange()');
+    const {
+      currencyFrom,
+      currencyTo,
+      amountFrom,
+      amountTo,
+    } = this.props.exchangeState;
+    const { balance } = this.props;
+
+    console.log('amountFrom: ', amountFrom);
+    console.log('amountTo: ', amountTo);
+
+    this.props.dispatchBalance(
+      currencyFrom,
+      Numeral(balance[currencyFrom])
+        .subtract(Numeral(amountFrom).value())
+        .value(),
+    );
+    this.props.dispatchBalance(
+      currencyTo,
+      Numeral(balance[currencyTo])
+        .add(Numeral(amountTo).value())
+        .value(),
+    );
   };
 
   handleChangeCurrencyFrom = (value) => {
@@ -176,6 +232,7 @@ Exchange.propTypes = {
   dispatchCurrencyTo: PropTypes.func.isRequired,
   dispatchCurrencyFrom: PropTypes.func.isRequired,
   dispatchIsReverse: PropTypes.func.isRequired,
+  dispatchBalance: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = function (state) {
@@ -229,6 +286,9 @@ const mapDispatchToProps = function (dispatch) {
     },
     dispatchIsReverse: (value) => {
       dispatch(setIsReverse(value));
+    },
+    dispatchBalance: (currency, amount) => {
+      dispatch(setBalance(currency, amount));
     },
   };
 };

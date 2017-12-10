@@ -61,6 +61,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --config webpack.config.js --hot --inline",
+    "start-s": "node ./src/api/stub/server",
     "lint": "./node_modules/eslint/bin/eslint.js --ext .js,.jsx ./src",
     "lint-fix": "./node_modules/eslint/bin/eslint.js --fix --ext .js,.jsx ./src",
     "test": "echo \"Error: no test specified\" && exit 1",

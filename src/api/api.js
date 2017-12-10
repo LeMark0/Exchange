@@ -47,6 +47,12 @@ export default function (resource, params) {
       ? resourceConfig.transformRequest(params)
       : params;
   }
+  if (resourceConfig.transformResponse) {
+    clientConfig.transformResponse = [].concat(
+      axios.defaults.transformResponse,
+      resourceConfig.transformResponse,
+    );
+  }
 
   return axios(clientConfig);
 }

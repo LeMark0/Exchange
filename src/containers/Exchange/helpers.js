@@ -14,7 +14,6 @@ export function parseNumber(value) {
 }
 
 export function convertCurrency(amount = 0, currencyFrom, currencyTo, rate = 1, isReverse = false) {
-  console.log('convertCurrency.rate: ', rate);
   const valueNumeral = Numeral(amount);
   const rateNumeral = Numeral(rate);
 

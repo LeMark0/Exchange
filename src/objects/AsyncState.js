@@ -45,4 +45,3 @@ export class AsyncState {
 
   hasRequested = false;
 }
-
