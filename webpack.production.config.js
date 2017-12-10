@@ -13,6 +13,7 @@ const plugins = [
   }),
   new HtmlWebpackPlugin({
     template: './static/index.html',
+    favicon: './static/favicon.ico',
   }),
 ];
 

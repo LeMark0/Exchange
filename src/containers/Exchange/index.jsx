@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Numeral from 'numeral';
+
 import {
   setCurrencyFrom,
   setCurrencyTo,
@@ -10,14 +10,14 @@ import {
   setIsReverse,
   getLatestRatesPeriodicalStart,
 } from 'actions/exchange';
-import { getBalance as loadBalance } from 'actions/user';
 
-import currencyList from 'constants/currencyList';
+import { getBalance as loadBalance } from 'actions/user';
 import { requestPeriod } from 'config/exchange';
 
 import Loader from 'components/Loader';
 import Currency from 'components/Currency';
 import CurrencySwitcher from './CurrencySwitcher';
+import { getSymbolByCurrency, convertCurrency, parseNumber } from './helpers';
 
 import {
   TopContainer,
@@ -31,18 +31,6 @@ import {
   Balance,
   ButtonStyled,
 } from './styled';
-
-function getSymbolByCurrency(currency) {
-  return currencyList[currency].symbol;
-}
-
-function parseNumber(value) {
-  const numeralValue = Numeral(value).value();
-  if (numeralValue === null) {
-    return 0;
-  }
-  return numeralValue;
-}
 
 class Exchange extends Component {
   componentDidMount() {
@@ -61,6 +49,7 @@ class Exchange extends Component {
       latestRatesAsyncState,
       balanceAsyncState,
       balance,
+      rateList,
       exchangeState: {
         currencyFrom,
         currencyTo,
@@ -75,7 +64,14 @@ class Exchange extends Component {
 
     const isLoaded = latestRatesAsyncState.needShowData && balanceAsyncState.needShowData;
     const valueNumber = parseNumber((isReverse) ? amountTo : amountFrom);
-    const convertedAmount = this.convert(valueNumber, currencyTo, currencyFrom, isReverse);
+
+    const convertedAmount = convertCurrency(
+      valueNumber,
+      currencyTo,
+      currencyFrom,
+      rateList[currencyTo],
+      isReverse,
+    );
     const topValue = (isReverse) ? convertedAmount : amountFrom;
     const bottomValue = (isReverse) ? amountTo : convertedAmount;
 
@@ -165,27 +161,6 @@ class Exchange extends Component {
     this.props.dispatchIsReverse(true);
     this.props.dispatchAmountTo(valueNumber);
   };
-
-  convert = (amount = 0, currencyFrom, currencyTo, isReverse = false) => {
-    const { rateList } = this.props;
-    const valueNumeral = Numeral(amount);
-    const rateNumeral = Numeral(rateList[currencyFrom]);
-
-    if (currencyFrom === currencyTo) {
-      // no need to convert
-      return valueNumeral.value();
-    }
-
-    if (isReverse === true) {
-      return valueNumeral
-        .divide(rateNumeral.value())
-        .value();
-    }
-
-    return valueNumeral
-      .multiply(rateNumeral.value())
-      .value();
-  }
 }
 
 Exchange.propTypes = {
@@ -218,7 +193,7 @@ const mapStateToProps = function (state) {
           data: {
             rates = {},
           } = {},
-        } = {},
+        },
       },
     },
   } = state;
