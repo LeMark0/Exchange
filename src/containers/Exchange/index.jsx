@@ -14,7 +14,6 @@ import {
 
 import { getBalance as loadBalance, setBalance } from 'actions/user';
 import { requestPeriod } from 'config/exchange';
-// import { LOAD_LATEST_RATES_ERROR, LO } from 'constants/error';
 
 import Loader from 'components/Loader';
 import Currency from 'components/Currency';
@@ -25,6 +24,7 @@ import {
   TopContainer,
   BottomContainer,
   ExchangeContainer,
+  FieldContainer,
   CurrencyInputStyled,
   ArrowDown,
   Title,
@@ -32,6 +32,8 @@ import {
   CurrencyContainer,
   Balance,
   ButtonStyled,
+  ErrorList,
+  ErrorItem,
 } from './styled';
 
 class Exchange extends Component {
@@ -68,7 +70,6 @@ class Exchange extends Component {
     const isLoading = latestRatesAsyncState.needShowLoader || balanceAsyncState.needShowLoader;
     const valueNumber = parseNumber((isReverse) ? amountTo : amountFrom);
 
-    // is not saved in store!
     const convertedAmount = convertCurrency(
       valueNumber,
       currencyTo,
@@ -88,7 +89,7 @@ class Exchange extends Component {
     return (
       <ExchangeContainer>
         <TopContainer>
-          <div>
+          <FieldContainer>
             <Title>Exchange</Title>
             <CurrencySwitcher
               value={currencyFrom}
@@ -108,10 +109,10 @@ class Exchange extends Component {
                 currencyCode={currencyFrom}
               />
             </Balance>
-          </div>
+          </FieldContainer>
         </TopContainer>
         <BottomContainer>
-          <div>
+          <FieldContainer>
             <ArrowDown />
             <CurrencyContainer>
               <Symbol>{symbolTo}</Symbol>
@@ -123,20 +124,20 @@ class Exchange extends Component {
             </CurrencyContainer>
             <Balance>
               <span>You have:</span>
-              <Currency value={balance[currencyTo]} currencyCode={currencyFrom} />
+              <Currency value={balance[currencyTo]} currencyCode={currencyTo} />
             </Balance>
             <CurrencySwitcher
               onChange={this.handleChangeCurrencyTo}
               value={currencyTo}
             />
             <ButtonStyled
-              onClick={this.handleExchange}
+              onClick={() => this.handleExchange(convertedAmount)}
               isDisabled={!isValid}
             >
               {this.renderButtonContent(!isLoading)}
             </ButtonStyled>
             {this.renderError()}
-          </div>
+          </FieldContainer>
         </BottomContainer>
       </ExchangeContainer>
     );
@@ -150,34 +151,36 @@ class Exchange extends Component {
   renderError = () => {
     const { latestRatesAsyncState, balanceAsyncState } = this.props;
     const asyncList = [latestRatesAsyncState, balanceAsyncState];
-    // const errorList = asyncList.reduce((acc, curr) => {
-    //   if (curr.needShowError) {
-    //     acc = [ ...acc,  ];
-    //   }
-    //
-    //   return acc;
-    // }, {});
-    const errorList = {
-      latestRatesAsyncState: '',
-    };
+    const errorList = asyncList.reduce((acc, curr) => {
+      if (curr.needShowError) {
+        acc = [
+          ...acc,
+          {
+            message: curr.error.message,
+            url: curr.error.config.url,
+          },
+        ];
+      }
+
+      return acc;
+    }, []);
+
     return (
-      <div></div>
+      <ErrorList>
+        {
+          errorList.map((item) => <ErrorItem key={item.url}>{item.message}</ErrorItem>)
+        }
+      </ErrorList>
     );
   };
 
-  handleExchange = () => {
-    // TODO get convertedAmount
-    console.log('handleExchange()');
+  handleExchange = (convertedAmount) => {
     const {
       currencyFrom,
       currencyTo,
       amountFrom,
-      amountTo,
     } = this.props.exchangeState;
     const { balance } = this.props;
-
-    console.log('amountFrom: ', amountFrom);
-    console.log('amountTo: ', amountTo);
 
     this.props.dispatchBalance(
       currencyFrom,
@@ -188,7 +191,7 @@ class Exchange extends Component {
     this.props.dispatchBalance(
       currencyTo,
       Numeral(balance[currencyTo])
-        .add(Numeral(amountTo).value())
+        .add(Numeral(convertedAmount).value())
         .value(),
     );
   };

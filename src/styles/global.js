@@ -1,14 +1,19 @@
 import { injectGlobal } from 'styled-components';
+import { mainBackgroundDark, defaultText } from './color';
 
 export default injectGlobal`
   html,
   root,
   body {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    color: #2e2e2e;
+    color: ${defaultText};
     margin: 0;
+    height: 100%;
   }
   body {
-    background: #1D95E7;
+    background: ${mainBackgroundDark};
+  }
+  #app {
+    height: 100%;
   }
 `;

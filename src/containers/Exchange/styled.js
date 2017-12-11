@@ -1,37 +1,46 @@
 import styled from 'styled-components';
+import {
+  mainBackgroundBright,
+  errorTextDarkBg,
+  errorTextLightBg,
+  positiveText,
+  defaultWhite,
+} from 'styles/color';
 import CurrencyInput from 'components/CurrencyInput';
 import Button from 'components/Button';
 
 export const Container = styled.div`
-  justify-content: center;
-  display: flex;
-  // margin: 25px auto;
+  margin: 0 auto;
 `;
 
 export const TopContainer = Container.extend`
-  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   height: 30%;
   min-height: 150px;
+  background-color: ${mainBackgroundBright};
 `;
 
 export const BottomContainer = Container.extend`
-  background-color: #007bd0;
-  align-items: flex-start;
   height: 70%;
+`;
+
+export const FieldContainer = styled.div`
+  width: 30vw;
+  min-width: 300px;
+  margin: 0 auto;
 `;
 
 export const ExchangeContainer = styled.div`
   text-align: center;
   margin: 0 auto;
-  justify-content: center;
   width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
+  height: 100%;
 `;
 
 export const Title = styled.h2`
-  color: #fff;
+  color: ${defaultWhite};
   text-align: center;
 `;
 
@@ -46,7 +55,7 @@ export const Symbol = styled.div`
 
 export const CurrencyInputStyled = styled(CurrencyInput)`
   border-bottom: none;
-  color: ${(props) => (props.ispositive ? '#41e887' : '#ffffff')};
+  color: ${(props) => (props.ispositive ? positiveText : defaultWhite)};
 `;
 
 export const CurrencyContainer = styled.div`
@@ -64,7 +73,7 @@ export const Balance = styled.div`
   text-align: left;
   width: 100%;
   font-size: 12px;
-  color: ${(props) => (props.error ? '#ff8888' : '#ffffff')};
+  color: ${(props) => (props.error ? errorTextLightBg : defaultWhite)};
 
   span {
     margin-right: 5px;
@@ -76,7 +85,17 @@ export const ArrowDown = styled.div`
   height: 0;
   border-left: 20px solid transparent;
   border-right: 20px solid transparent;
-  border-top: 20px solid #1D95E7;
+  border-top: 20px solid ${mainBackgroundBright};
 
   margin: 0 auto;
+`;
+
+export const ErrorItem = styled.li`
+  color: ${errorTextDarkBg};
+  text-align: left;
+  font-size: 14px;
+`;
+
+export const ErrorList = styled.ul`
+  padding-left: 10px;
 `;
