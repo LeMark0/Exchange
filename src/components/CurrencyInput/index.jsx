@@ -13,6 +13,7 @@ export default class CurrencyInput extends Component {
     className: PropTypes.string,
     isNumericString: PropTypes.bool,
     allowNegative: PropTypes.bool,
+    fixedDecimalScale: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -23,6 +24,7 @@ export default class CurrencyInput extends Component {
     className: null,
     isNumericString: true,
     allowNegative: false,
+    fixedDecimalScale: false,
     value: '',
   };
 

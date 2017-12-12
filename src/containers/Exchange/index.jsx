@@ -153,7 +153,7 @@ class Exchange extends Component {
     const asyncList = [latestRatesAsyncState, balanceAsyncState];
     const errorList = asyncList.reduce((acc, curr) => {
       if (curr.needShowError) {
-        acc = [
+        return [
           ...acc,
           {
             message: curr.error.message,
@@ -161,7 +161,6 @@ class Exchange extends Component {
           },
         ];
       }
-
       return acc;
     }, []);
 
@@ -238,7 +237,7 @@ Exchange.propTypes = {
   dispatchBalance: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = function (state) {
+function mapStateToProps(state) {
   const {
     user: {
       balance,
@@ -265,9 +264,9 @@ const mapStateToProps = function (state) {
     latestRatesAsyncState: getLatestRates,
     balanceAsyncState: getBalance,
   };
-};
+}
 
-const mapDispatchToProps = function (dispatch) {
+function mapDispatchToProps(dispatch) {
   return {
     loadUserBalance: () => {
       dispatch(loadBalance());
@@ -294,6 +293,6 @@ const mapDispatchToProps = function (dispatch) {
       dispatch(setBalance(currency, amount));
     },
   };
-};
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(Exchange);

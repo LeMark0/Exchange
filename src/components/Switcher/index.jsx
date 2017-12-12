@@ -16,15 +16,6 @@ function getInitialValue(propValue, children) {
 }
 
 export default class Switcher extends React.Component {
-  constructor(props) {
-    super(props);
-    const { value, children } = props;
-
-    this.state = {
-      value: getInitialValue(value, children),
-    };
-  }
-
   static propTypes = {
     value: PropTypes.oneOfType([
       PropTypes.bool,
@@ -44,6 +35,15 @@ export default class Switcher extends React.Component {
     orientation: 'horizontal',
     className: null,
   };
+
+  constructor(props) {
+    super(props);
+    const { value, children } = props;
+
+    this.state = {
+      value: getInitialValue(value, children),
+    };
+  }
 
   render() {
     const { children, orientation, className } = this.props;

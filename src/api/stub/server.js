@@ -1,7 +1,5 @@
-/**
- *
- * Run the server to use stubs
- */
+// Run the server to use stubs
+
 const { port } = require('../stubServerConfig');
 
 const connect = require('connect');

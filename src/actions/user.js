@@ -19,6 +19,6 @@ export const getBalance = (params) => async (dispatch) => {
     const response = await api('user.balance', params);
     dispatch(getBalanceSuccess(response.data));
   } catch (error) {
-    dispatch(getBalanceFail({ ...error, message: LOAD_USER_BALANCE_ERROR}));
+    dispatch(getBalanceFail({ ...error, message: LOAD_USER_BALANCE_ERROR }));
   }
 };

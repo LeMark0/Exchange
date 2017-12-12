@@ -5,7 +5,11 @@ import { SwitcherOptionStyled } from './styled';
 
 export default class SwitcherOption extends Component {
   static propTypes = {
-    value: PropTypes.any.isRequired,
+    value: PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.number,
+      PropTypes.bool,
+    ]).isRequired,
     onClick: PropTypes.func,
     isSelected: PropTypes.bool,
     children: PropTypes.node,
@@ -40,4 +44,4 @@ export default class SwitcherOption extends Component {
     const { value, onClick } = this.props;
     onClick(value);
   }
-};
+}
