@@ -1,5 +1,5 @@
 # Exchange app
-Exchange app based on my React-Redux-Starter-Kit
+Exchange app based on my [React-Redux-Starter-Kit](https://github.com/CheerfulYeti/React-Redux-Starter-Kit)
 
 # How to run (npm)
 1. `git clone https://github.com/CheerfulYeti/Exchange.git`
